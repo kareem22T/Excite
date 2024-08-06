@@ -19,6 +19,15 @@ import pcGaming from './../../images/pc_gaming.png'
 import customPc from './../../images/custom.png'
 import buildPc from './../../images/build_pc.png'
 
+import brand1 from './../../images/brand1.png'
+import brand2 from './../../images/brand2.png'
+import brand3 from './../../images/brand3.png'
+import brand4 from './../../images/brand4.png'
+import brand5 from './../../images/brand5.png'
+import brand6 from './../../images/brand6.png'
+
+import maintain from './../../images/Maintenance_main.png'
+
 const Home = () => {
   return (
     <DefaultLayout>
@@ -917,6 +926,115 @@ const Home = () => {
             </Swiper>
           </div>
         </div>
+      </div>
+      <div className="brands">
+        <div className="container">
+        <div className="best_selling_slider_wrapper">
+            <div className="head">
+              <div className="top">
+                <h1>Browse By Brand</h1>
+                <div>
+                  <button>View All</button>
+                  <div className="navigation">
+                    <button className="prev-4">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M11 5L4 12L11 19M4 12H20" stroke="#B5B5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button className="next-4">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3.5 12H20M20 12L13 5M20 12L13 19" stroke="#FFC633" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Swiper
+              spaceBetween={12}
+              slidesPerView={3}
+              freeMode={true}
+              autoplay={{ delay: 1000, disableOnInteraction: false }}
+              loop={true}
+              speed={500}
+              breakpoints={{
+                575: {
+                  slidesPerView: 4, // 4 slides per view when the screen width is 993px or more
+                  spaceBetween: 24
+                },
+                992: {
+                  slidesPerView: 6, // 4 slides per view when the screen width is 993px or more
+                  spaceBetween: 30
+                },
+              }}
+              pagination={{ clickable: true }} // Add pagination
+              navigation={{ 
+                nextEl: '.next-4',
+                prevEl: '.prev-4',
+              }} // Add custom navigation controls
+              modules={[Pagination, Autoplay, Navigation]}
+              className="brands-slider"
+            >
+              <SwiperSlide>
+                <img src={brand1} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand2} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand3} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand4} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand5} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand6} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand1} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand2} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand3} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand4} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand5} />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={brand6} />
+              </SwiperSlide>
+            </Swiper>
+          </div>
+        </div>
+      </div>
+      <div className="container">
+        <span className="line"></span>
+        <section className="maintenance">
+          <div className="text">
+            <h1>Maintenance center</h1>
+            <p>
+            Explore our new and professional PC Parts for gaming pc 
+            <br />
+            for best brands and lower price.
+            </p>
+            <button>
+              Order Now
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.25646 6.85514L0.617188 2.21586L1.94243 0.890625L7.90694 6.85514L1.94243 12.8197L0.617188 11.4944L5.25646 6.85514Z" fill="white"/>
+              </svg>
+            </button>
+          </div>
+          <img src={maintain} />
+        </section>
       </div>
     </DefaultLayout>
   )
