@@ -1979,6 +1979,17 @@ header .categories a svg {
 
 footer {
   background-color: #000;
+  position: relative;
+}
+footer::after {
+  content: "";
+  position: absolute;
+  top: -16px;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  background: linear-gradient(270deg, #00FFD7 0%, #FED700 100%);
+  z-index: -1;
 }
 footer .container {
   display: grid;
