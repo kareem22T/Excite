@@ -1780,11 +1780,11 @@ footer {
             color: #fff;
             text-decoration: none;
             list-style: none;
+        }
+        >* {
             @media (max-width: 767.98px) {   
                 display: flex;
                 justify-content: center;
-                flex-direction: column;
-                align-items: center;
             }
         }
         >div {
@@ -1919,6 +1919,9 @@ footer {
         ul {
             @media (max-width: 992.98px) {
                 margin-bottom: 12px;
+                flex-direction: column !important;
+                align-items: center;
+                justify-content: start;
                 li {
                     width: 100%;
                     padding: 0 16px;
@@ -1928,7 +1931,7 @@ footer {
                 }
                 &.open {
                     li {
-                        display: block;
+                        display: block !important;
                     }
                 }
             }
