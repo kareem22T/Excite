@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Loader from './common/Loader';
 import Home from './pages/home/home';
 import "./css/main.css"
+import Product from './pages/product';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,6 +26,14 @@ function App() {
           element={
             <>
               <Home />
+            </>
+          }
+        />
+        <Route
+          path="/product"
+          element={
+            <>
+              <Product />
             </>
           }
         />
