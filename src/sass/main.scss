@@ -721,6 +721,10 @@ header {
         }
         .swiper-slide {
             margin-bottom: 48px;
+            * {
+                color: #000;
+                text-decoration: none;
+            }
             h3 {
                 @media (max-width: 767.98px) {
                     font-size: 16px;

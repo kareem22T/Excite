@@ -27,35 +27,82 @@ import brand3 from './../../images/brand3.png'
 import brand4 from './../../images/brand4.png'
 import brand5 from './../../images/brand5.png'
 import brand6 from './../../images/brand6.png'
-
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+interface Product {
+    id: number;
+    title: string;
+    images: {
+      id: number;
+      code: string;
+      original: string;
+      caption: string;
+      display_order: number;
+      date_created: string;
+    }[];
+    brand: number;
+    product_class: string;
+    description: string;
+    recommended_products: any[]; // Assuming it's an array, you can specify the type if known
+    product_options: any[]; // Assuming it's an array, you can specify the type if known
+    price: {
+      currency: string;
+      excl_tax: number;
+      incl_tax: number;
+      tax: number;
+    };
+    stock: number;
+    slug: string;
+    brand_name: string;
+    calculate_rating: number | null;
+    num_approved_reviews: number;
+    in_wishlist: boolean;
+    rating: number | null;
+  }
+  
 const Product = () => {
+    const { id } = useParams();
+    const [product, setProduct] = useState<Product | null>(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetch('https://excite.techno-era.co/en/api/oscar/products/' + id + '/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    setProduct(data.data);
+                    setSelectedImage(data.data.images[0]?.original || null); // Set the first image as default
+                }
+            });
+    }, [id]);
+
+    const handleImageClick = (imgUrl: string) => {
+        setSelectedImage(imgUrl);
+    }
     return (
         <DefaultLayout>
             <div className="container">
                 <section className="product_wrapper">
-                    <div className="imgs">
+                <div className="imgs">
                         <div className="other">
-                            <div className="img">
-                                <img src={img1} alt="" />
-                            </div>
-                            <div className="img">
-                                <img src={img2} alt="" />
-                            </div>
-                            <div className="img">
-                                <img src={img3} alt="" />
-                            </div>
-                            <div className="img">
-                                <img src={img4} alt="" />
-                            </div>
+                            {product?.images.map((img, index) => (
+                                <div 
+                                    key={index} 
+                                    className={`img ${selectedImage === img.original ? 'selected' : ''}`}
+                                    onClick={() => handleImageClick(img.original)}
+                                >
+                                    <img src={img.original} alt={`Image ${index + 1}`} />
+                                </div>
+                            ))}
                         </div>
-                        <div className="img">
-                            <img src={img5} alt="" />
+                        <div className="img selected">
+                            <img src={selectedImage || ''} alt="Selected" />
                         </div>
                     </div>
                     <div className="details">
                         <div className="title">
                             <h1>
-                                Havic HV G-92 Gamepad
+                                {product?.title}
                             </h1>
                             <button>
                                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -88,10 +135,9 @@ const Product = () => {
                             </p>
                         </div>
                         <p className="price">
-                            $192.00
+                            {product?.price.incl_tax + ' ' + product?.price.currency}
                         </p>
-                        <p className="desc">
-                            PlayStation 5 Controller Skin High quality vinyl with air channel adhesive for easy bubble free install & mess free removal Pressure sensitive.
+                        <p className="desc"dangerouslySetInnerHTML={{ __html: product?.description || '' }}>
                         </p>
                         <hr />
                         <div className="colors">

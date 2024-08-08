@@ -823,6 +823,10 @@ header .categories a svg {
 .best_selling_slider_wrapper .best-selling .swiper-slide {
   margin-bottom: 48px;
 }
+.best_selling_slider_wrapper .best-selling .swiper-slide * {
+  color: #000;
+  text-decoration: none;
+}
 @media (max-width: 767.98px) {
   .best_selling_slider_wrapper .best-selling .swiper-slide h3 {
     font-size: 16px;
