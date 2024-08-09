@@ -6,6 +6,9 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import store, { persistor } from './store';
 import { Provider } from 'react-redux';
+import { setupInterceptors } from './Api';
+
+setupInterceptors(store)
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

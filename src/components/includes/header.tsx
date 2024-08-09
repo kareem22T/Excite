@@ -1,9 +1,29 @@
 import { useState } from 'react';
 import logo from './../../images/logo.png'
+import { Link, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearCredentials } from '../../features/auth/authSlice';
+import { api } from '../../Api';
+import { API_URL } from '../../_env';
 
 const Header = () => {
     const [showLangOptions, setShowLangOptions] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
+    const auth = useSelector((state:any) => state.auth);
+    const dispatch = useDispatch()
+
+    const handleLogOut = async () => {
+        console.log("logo out");
+        try {
+            const response = await api.post(API_URL + '/user/logout/');
+          } catch (error) {
+            console.error(error);
+          }      
+        dispatch(clearCredentials());
+        return <Navigate to="/login" />;
+    }
+    
+    
     return (
         <header>
             <div className="top">
@@ -34,7 +54,7 @@ const Header = () => {
                         <img src={logo} className='logo' />
                     </div>
                     <nav className="links">
-                        <a href="" className='active'>Home</a>
+                        <Link to={'/'} className='active'>Home</Link>
                         <a href="">Shop</a>
                         <a href="">Services</a>
                         <a href="">ProPc</a>
@@ -65,12 +85,64 @@ const Header = () => {
                             <path d="M7.5 12.5H19.1925C19.2792 12.5001 19.3633 12.4701 19.4304 12.4151C19.4975 12.3601 19.5434 12.2836 19.5605 12.1986L20.9105 5.44859C20.9214 5.39417 20.92 5.338 20.9066 5.28414C20.8931 5.23029 20.8679 5.18009 20.8327 5.13717C20.7975 5.09426 20.7532 5.05969 20.703 5.03597C20.6528 5.01225 20.598 4.99996 20.5425 5H6" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </a>
-                        <a href="">
+                        <button className='account_btn' onClick={() => {setShowMenu(!showMenu)}}>
                             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M24 27V24.3333C24 22.9188 23.5224 21.5623 22.6722 20.5621C21.8221 19.5619 20.669 19 19.4667 19H11.5333C10.331 19 9.17795 19.5619 8.32778 20.5621C7.47762 21.5623 7 22.9188 7 24.3333V27" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M16.5 14C18.9853 14 21 11.9853 21 9.5C21 7.01472 18.9853 5 16.5 5C14.0147 5 12 7.01472 12 9.5C12 11.9853 14.0147 14 16.5 14Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                        </a>
+                            {
+                                showMenu && (
+                                    <div className="menu-pop">
+                                        {
+                                            auth.isAuthenticated ? (
+                                                <>
+                                                <h2>Hello, {auth.name}</h2>
+                                                <Link to={'/account'}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-user" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                    <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+                                                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                                                    </svg>
+                                                    My Account
+                                                </Link>
+                                                <button onClick={handleLogOut}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-logout-2" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                    <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                                    <path d="M15 12h-12l3 -3" />
+                                                    <path d="M6 15l-3 -3" />
+                                                    </svg>
+                                                    Logout
+                                                </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Link to={'/login'}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-login-2" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                        <path d="M9 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                                        <path d="M3 12h13l-3 -3" />
+                                                        <path d="M13 15l3 -3" />
+                                                        </svg>
+                                                        Login
+                                                    </Link>
+                                                    <Link to={"/register"}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-user-plus" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                        <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+                                                        <path d="M16 19h6" />
+                                                        <path d="M19 16v6" />
+                                                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4" />
+                                                        </svg>
+                                                        Register
+                                                    </Link>
+                                                </>
+                                            )
+                                        }
+                                    </div>
+                                )
+                            }
+                        </button>
                     </div>
                 </div>
             </div>
@@ -86,20 +158,20 @@ const Header = () => {
                                 </svg>
                             </button>
                         </div>
-                        <a href="" className='active'>Home</a>
+                        <Link to="/" className='active'>Home</Link>
                         <a href="">Shop</a>
                         <a href="">Services</a>
                         <a href="">ProPc</a>
                         <a href="">Blog</a>
-                        <a href="" className="login">
+                        <Link to="/Login" className="login">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="8" cy="8" r="7.73333" stroke="black" stroke-width="0.533333"/>
                             <path d="M5.74066 9.45084C5.15117 9.80184 3.60557 10.5185 4.54694 11.4154C5.0068 11.8535 5.51896 12.1668 6.16286 12.1668H9.83713C10.481 12.1668 10.9932 11.8535 11.453 11.4154C12.3944 10.5185 10.8488 9.80184 10.2593 9.45084C8.877 8.62771 7.123 8.62771 5.74066 9.45084Z" stroke="black" stroke-width="0.625" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M9.875 5.7085C9.875 6.74403 9.03554 7.5835 8 7.5835C6.96447 7.5835 6.125 6.74403 6.125 5.7085C6.125 4.67296 6.96447 3.8335 8 3.8335C9.03554 3.8335 9.875 4.67296 9.875 5.7085Z" stroke="black" stroke-width="0.625"/>
                             </svg>
                             Login in
-                        </a>
-                        <a href="" className="login">
+                        </Link>
+                        <Link to="/Register" className="login">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8.21094 12.1663H5.7488C5.10489 12.1663 4.59273 11.853 4.13288 11.4149C3.19151 10.518 4.7371 9.80133 5.32659 9.45033C6.20193 8.92913 7.22627 8.73796 8.21094 8.87683C8.56823 8.92721 8.91619 9.02108 9.2526 9.15838" stroke="black" stroke-width="0.625" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M9.875 5.7085C9.875 6.74403 9.03554 7.5835 8 7.5835C6.96447 7.5835 6.125 6.74403 6.125 5.7085C6.125 4.67296 6.96447 3.8335 8 3.8335C9.03554 3.8335 9.875 4.67296 9.875 5.7085Z" stroke="black" stroke-width="0.625"/>
@@ -107,7 +179,7 @@ const Header = () => {
                             <circle cx="8" cy="8" r="7.73333" stroke="black" stroke-width="0.533333"/>
                             </svg>
                             Create an account
-                        </a>
+                        </Link>
                         <div className="lang">
                             <h2>
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

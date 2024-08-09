@@ -4,8 +4,16 @@ import Loader from './common/Loader';
 import Home from './pages/home/home';
 import "./css/main.css"
 import Product from './pages/product';
+import Login from './pages/auth/login';
+import Register from './pages/auth/register';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import useAuth from './hooks/useAuth';
+import { useSelector } from 'react-redux';
 
 function App() {
+  const isAuthentication = useSelector((state:any) => state.auth);
+
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
 
@@ -15,11 +23,13 @@ function App() {
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 2000);
+    
   }, []);
   return loading ? (
     <Loader />
   ) : (
     <>
+      <ToastContainer />
       <Routes>
         <Route
           path="/"
@@ -35,6 +45,28 @@ function App() {
             <>
               <Product />
             </>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            !isAuthentication.isAuthenticated ?
+            <>
+              <Login />
+            </>
+            : 
+            <Navigate to="/" replace /> // Use Navigate with replace for better behavior
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            !isAuthentication.isAuthenticated ?
+            <>
+              <Register />
+            </>
+            : 
+            <Navigate to="/" replace /> // Use Navigate with replace for better behavior
           }
         />
       </Routes>
