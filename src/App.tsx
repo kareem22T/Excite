@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useAuth from './hooks/useAuth';
 import { useSelector } from 'react-redux';
+import Profile from './pages/Profile';
 
 function App() {
   const isAuthentication = useSelector((state:any) => state.auth);
@@ -36,6 +37,14 @@ function App() {
           element={
             <>
               <Home />
+            </>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <>
+              <Profile />
             </>
           }
         />
