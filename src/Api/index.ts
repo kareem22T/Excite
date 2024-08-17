@@ -30,7 +30,6 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
         store.dispatch(clearCredentials()); // Dispatch the action to clear credentials
-        window.location.href = '/login'; // Redirect to login
       }
     }
 );

@@ -1,15 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from './../../images/logo.png'
 import { Link, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCredentials } from '../../features/auth/authSlice';
 import { api } from '../../Api';
 import { API_URL } from '../../_env';
-
+import best1 from './../../images/best-1.png'
+import axios from 'axios';
+type Category = {
+    id: number,
+    name: string
+}
 const Header = () => {
     const [showLangOptions, setShowLangOptions] = useState(false)
+    const [categories, setCategories] = useState<Category[]>([])
     const [showMenu, setShowMenu] = useState(false)
+    const [showProfile, setShowProfile] = useState(false)
     const auth = useSelector((state:any) => state.auth);
+    const [showCart, setShowCart] = useState(false)
     const dispatch = useDispatch()
 
     const handleLogOut = async () => {
@@ -23,6 +31,21 @@ const Header = () => {
         return <Navigate to="/login" />;
     }
     
+    
+    const fetchCategories = async () => {
+        console.log("logo out");
+        try {
+            const response = await axios.get(API_URL + '/oscar/categories/');
+            if (response.data.status)
+                setCategories(response.data.data)
+          } catch (error) {
+            console.error(error);
+          }      
+    }
+    
+    useEffect(() => {
+        fetchCategories()
+    }, [])
     
     return (
         <header>
@@ -72,32 +95,32 @@ const Header = () => {
                             <path d="M20 20L16.2223 16.2156M18.3158 11.1579C18.3158 13.0563 17.5617 14.8769 16.2193 16.2193C14.8769 17.5617 13.0563 18.3158 11.1579 18.3158C9.2595 18.3158 7.43886 17.5617 6.0965 16.2193C4.75413 14.8769 4 13.0563 4 11.1579C4 9.2595 4.75413 7.43886 6.0965 6.0965C7.43886 4.75413 9.2595 4 11.1579 4C13.0563 4 14.8769 4.75413 16.2193 6.0965C17.5617 7.43886 18.3158 9.2595 18.3158 11.1579V11.1579Z" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
                         </a>
-                        <a href="">
+                        <Link to={'/wishlist'}>
                             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M11 7C8.239 7 6 9.216 6 11.95C6 14.157 6.875 19.395 15.488 24.69C15.6423 24.7839 15.8194 24.8335 16 24.8335C16.1806 24.8335 16.3577 24.7839 16.512 24.69C25.125 19.395 26 14.157 26 11.95C26 9.216 23.761 7 21 7C18.239 7 16 10 16 10C16 10 13.761 7 11 7Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                        </a>
-                        <a href="">
+                        </Link>
+                        <button onClick={() => {setShowCart(true)}} style={{border: "none", background: 'transparent'}}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8.25 20.25C8.66421 20.25 9 19.9142 9 19.5C9 19.0858 8.66421 18.75 8.25 18.75C7.83579 18.75 7.5 19.0858 7.5 19.5C7.5 19.9142 7.83579 20.25 8.25 20.25Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M18.75 20.25C19.1642 20.25 19.5 19.9142 19.5 19.5C19.5 19.0858 19.1642 18.75 18.75 18.75C18.3358 18.75 18 19.0858 18 19.5C18 19.9142 18.3358 20.25 18.75 20.25Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M2.25 3.75H5.25L7.5 16.5H19.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M7.5 12.5H19.1925C19.2792 12.5001 19.3633 12.4701 19.4304 12.4151C19.4975 12.3601 19.5434 12.2836 19.5605 12.1986L20.9105 5.44859C20.9214 5.39417 20.92 5.338 20.9066 5.28414C20.8931 5.23029 20.8679 5.18009 20.8327 5.13717C20.7975 5.09426 20.7532 5.05969 20.703 5.03597C20.6528 5.01225 20.598 4.99996 20.5425 5H6" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                        </a>
-                        <button className='account_btn' onClick={() => {setShowMenu(!showMenu)}}>
+                        </button>
+                        <button className='account_btn' onClick={() => {setShowProfile(!showProfile)}}>
                             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M24 27V24.3333C24 22.9188 23.5224 21.5623 22.6722 20.5621C21.8221 19.5619 20.669 19 19.4667 19H11.5333C10.331 19 9.17795 19.5619 8.32778 20.5621C7.47762 21.5623 7 22.9188 7 24.3333V27" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M16.5 14C18.9853 14 21 11.9853 21 9.5C21 7.01472 18.9853 5 16.5 5C14.0147 5 12 7.01472 12 9.5C12 11.9853 14.0147 14 16.5 14Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             {
-                                showMenu && (
+                                showProfile && (
                                     <div className="menu-pop">
                                         {
                                             auth.isAuthenticated ? (
                                                 <>
                                                 <h2>Hello, {auth.name}</h2>
-                                                <Link to={'/account'}>
+                                                <Link to={'/profile'}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-user" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                                     <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
@@ -199,7 +222,7 @@ const Header = () => {
                     </div>
                 )
             }
-            <div className="categories">
+            {/* <div className="categories">
                 <div className="container">
                     <a href="">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -257,7 +280,147 @@ const Header = () => {
                         Gaming
                     </a>
                 </div>
+            </div> */}
+            <div className="categories">
+                <div className="container">
+                    {
+                        (categories && categories.length > 0) && (
+                            categories.map(
+                                category => (
+                                    <Link to={'/category/' + category.id}>
+                                        {category.name}
+                                    </Link>                
+                                )
+                            )
+                        )
+                    }
+                </div>
             </div>
+            {
+                showCart && (       
+                    <>
+                        <div className="hide-content" onClick={() => {setShowCart(false)}}></div>
+                        <div className="cart">
+                            <div className="cart_wrapper">
+                                <div className="head">
+                                    <h1>Cart</h1>
+                                    <h2>4 items</h2>
+                                </div>
+                                <div className="products">
+                                    <div className="product">
+                                        <div>
+                                            <img src={best1} alt="" />
+                                            <div className="text">
+                                                <h3>PC Full Comp</h3>
+                                                <p>Color: Black</p>
+                                                <div className="quantity">
+                                                    <button>
+                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M3.22656 8H12.5599" stroke="#121212" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </button>
+                                                    2   
+                                                    <button>
+                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.3776 3.3335C8.3776 3.12639 8.20971 2.9585 8.0026 2.9585C7.7955 2.9585 7.6276 3.12639 7.6276 3.3335V7.62516H3.33594C3.12883 7.62516 2.96094 7.79306 2.96094 8.00016C2.96094 8.20727 3.12883 8.37516 3.33594 8.37516H7.6276V12.6668C7.6276 12.8739 7.7955 13.0418 8.0026 13.0418C8.20971 13.0418 8.3776 12.8739 8.3776 12.6668V8.37516H12.6693C12.8764 8.37516 13.0443 8.20727 13.0443 8.00016C13.0443 7.79306 12.8764 7.62516 12.6693 7.62516H8.3776V3.3335Z" fill="#121212"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="price">
+                                                $19.19
+                                            </h3>
+                                            <button>
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#6C7275"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="product">
+                                        <div>
+                                            <img src={best1} alt="" />
+                                            <div className="text">
+                                                <h3>PC Full Comp</h3>
+                                                <p>Color: Black</p>
+                                                <div className="quantity">
+                                                    <button>
+                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M3.22656 8H12.5599" stroke="#121212" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </button>
+                                                    2   
+                                                    <button>
+                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.3776 3.3335C8.3776 3.12639 8.20971 2.9585 8.0026 2.9585C7.7955 2.9585 7.6276 3.12639 7.6276 3.3335V7.62516H3.33594C3.12883 7.62516 2.96094 7.79306 2.96094 8.00016C2.96094 8.20727 3.12883 8.37516 3.33594 8.37516H7.6276V12.6668C7.6276 12.8739 7.7955 13.0418 8.0026 13.0418C8.20971 13.0418 8.3776 12.8739 8.3776 12.6668V8.37516H12.6693C12.8764 8.37516 13.0443 8.20727 13.0443 8.00016C13.0443 7.79306 12.8764 7.62516 12.6693 7.62516H8.3776V3.3335Z" fill="#121212"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="price">
+                                                $19.19
+                                            </h3>
+                                            <button>
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#6C7275"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="product">
+                                        <div>
+                                            <img src={best1} alt="" />
+                                            <div className="text">
+                                                <h3>PC Full Comp</h3>
+                                                <p>Color: Black</p>
+                                                <div className="quantity">
+                                                    <button>
+                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M3.22656 8H12.5599" stroke="#121212" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </button>
+                                                    2   
+                                                    <button>
+                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.3776 3.3335C8.3776 3.12639 8.20971 2.9585 8.0026 2.9585C7.7955 2.9585 7.6276 3.12639 7.6276 3.3335V7.62516H3.33594C3.12883 7.62516 2.96094 7.79306 2.96094 8.00016C2.96094 8.20727 3.12883 8.37516 3.33594 8.37516H7.6276V12.6668C7.6276 12.8739 7.7955 13.0418 8.0026 13.0418C8.20971 13.0418 8.3776 12.8739 8.3776 12.6668V8.37516H12.6693C12.8764 8.37516 13.0443 8.20727 13.0443 8.00016C13.0443 7.79306 12.8764 7.62516 12.6693 7.62516H8.3776V3.3335Z" fill="#121212"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="price">
+                                                $19.19
+                                            </h3>
+                                            <button>
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#6C7275"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bottom">
+                                    <p>
+                                        <span>Subtotal</span>
+                                        <span>$99.00</span>
+                                    </p>
+                                    <h4>
+                                        <span>Total</span>
+                                        <span>$234.00</span>
+                                    </h4>
+                                    <button>Checkout</button>
+                                    <Link to={'/cart'}>View Cart</Link>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )
+            }
         </header>
     )
 }

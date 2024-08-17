@@ -131,7 +131,7 @@ const Product = () => {
                             (150 Reviews)
                             <span></span>
                             <p className="stock">
-                                In Stock
+                                {product?.stock && product.stock > 0 ? 'In Stock' : 'Out Of Stock'}
                             </p>
                         </div>
                         <p className="price">

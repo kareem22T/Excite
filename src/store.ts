@@ -3,9 +3,11 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
 import authReducer from './features/auth/authSlice';
+import wishlistReducer from './features/wishlist/wishlistSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  wishlist: wishlistReducer,
 });
 
 const persistConfig = {

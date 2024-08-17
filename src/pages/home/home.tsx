@@ -5,10 +5,6 @@ import "swiper/css/navigation"; // Import navigation styles
 import { Navigation, Autoplay, Pagination, FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import slide from './../../images/slide.jpeg'
-import cat1 from './../../images/cat-1.png'
-import cat2 from './../../images/cat-2.png'
-import cat3 from './../../images/cat-3.png'
-import cat4 from './../../images/cat-4.png'
 import best1 from './../../images/best-1.png'
 import best2 from './../../images/best-2.png'
 import best3 from './../../images/best-3.png'
@@ -44,6 +40,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import CategoriesSlider from "./categories";
 import BestSellingProductsSlider from "./BestSell";
+import MainSlider from "./MainSlider";
 
 const Home = () => {
   useEffect(() => {
@@ -60,42 +57,7 @@ const Home = () => {
   return (
     <DefaultLayout>
       <div className="container">
-        <Swiper
-          spaceBetween={20}
-          slidesPerView={1}
-          freeMode={true}
-          autoplay={{ delay: 3500, disableOnInteraction: false }}
-          loop={true}
-          speed={700}
-          pagination={{ clickable: true }} // Add pagination
-          modules={[Pagination, Autoplay]}
-          className="main-slider"
-        >
-          <SwiperSlide>
-            <img src={slide} />
-            <div className="text">
-              <h1>Sale up to 50% off</h1>
-              <h4>12 inch hd display</h4>
-              <a href="">Shop Now</a>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <img src={slide} />
-            <div className="text">
-              <h1>Sale up to 50% off</h1>
-              <h4>12 inch hd display</h4>
-              <a href="">Shop Now</a>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <img src={slide} />
-            <div className="text">
-              <h1>Sale up to 50% off</h1>
-              <h4>12 inch hd display</h4>
-              <a href="">Shop Now</a>
-            </div>
-          </SwiperSlide>
-        </Swiper>
+        <MainSlider />
         <CategoriesSlider />
         <span className="line"></span>
         <BestSellingProductsSlider />

@@ -11,6 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import useAuth from './hooks/useAuth';
 import { useSelector } from 'react-redux';
 import Profile from './pages/Profile';
+import Wishlist from './pages/wishlist';
+import Category from './pages/categories/category';
 
 function App() {
   const isAuthentication = useSelector((state:any) => state.auth);
@@ -49,10 +51,29 @@ function App() {
           }
         />
         <Route
+          path="/wishlist"
+          element={
+            isAuthentication.isAuthenticated ?
+            <>
+              <Wishlist />
+            </>
+            : 
+            <Navigate to="/" replace /> // Use Navigate with replace for better behavior
+          }
+        />
+        <Route
           path="/product/:id"
           element={
             <>
               <Product />
+            </>
+          }
+        />
+        <Route
+          path="/category/:id"
+          element={
+            <>
+              <Category />
             </>
           }
         />

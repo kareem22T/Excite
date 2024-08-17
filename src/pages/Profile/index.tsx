@@ -1,25 +1,53 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import DefaultLayout from "../../layout/DefaultLayout";
 import profile from '../../images/profile.png'
+import { api } from "../../Api";
+import { API_URL } from "../../_env";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { clearCredentials } from "../../features/auth/authSlice";
+import ProfileHeader from "../../components/profile/header";
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    username: string;
+}
 
 const Profile = () => {
+    const [user, setUser] = useState<User>()
+    const dispatch = useDispatch()
+
+    const handleLogOut = async () => {
+        console.log("logo out");
+        try {
+            const response = await api.post(API_URL + '/user/logout/');
+          } catch (error) {
+            console.error(error);
+          }      
+        dispatch(clearCredentials());
+        return <Navigate to="/login" />;
+    }
+
+    const getUser = async () => {
+        try {
+            const response = await api.get(API_URL + '/user/properties/');
+            setUser(response.data.data[0])
+        } catch (error) {
+            console.error(error);
+        }      
+    }
+
+    useEffect(() => {
+        getUser()
+    }, [])
+
     return (
         <DefaultLayout>
             <div className="profile_wrapper">
-                <div className="head">
-                    <div className="container">
-                        <h1>User Account</h1>
-                        <nav>
-                            <Link className="active" to={'/profile'}><span>Profile</span></Link>
-                            <Link to={'/wishlist'}><span>Favorite</span></Link>
-                            <Link to={'/wallet'}><span>Wallet</span></Link>
-                            <Link to={'/my-orders'}><span>My Orders</span></Link>
-                            <Link to={'/my-review'}><span>My Reviews</span></Link>
-                            <Link to={'/my-address'}><span>My Address</span></Link>
-                        </nav>
-                    </div>
-                </div>
-                <div className="profile">
+            <ProfileHeader activePage="profile" />
+            <div className="profile">
                     <div className="container">
                         <div className="statistics">
                             <h4>Profile</h4>
@@ -31,11 +59,11 @@ const Profile = () => {
                                 <input type="file" name="photo" id="photo" />
                             </label>
                             <h2>
-                                John Esmat
+                                {user?.name}
                                 <br />
-                                <span>
+                                {/* <span>
                                     Ui - Ux Designer
-                                </span>
+                                </span> */}
                             </h2>
                             <div className="numbers">
                                 <div>
@@ -52,7 +80,7 @@ const Profile = () => {
                                 </div>
                             </div>
                             <button className="edit_prof_btn">Edit Profile</button>
-                            <button className="sign_out_btn">
+                            <button className="sign_out_btn" onClick={handleLogOut}>
                                 Sign out
                                 <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clip-path="url(#clip0_27_32928)">
