@@ -36,14 +36,23 @@ import serv3 from './../../images/Services-2.png'
 
 import adone from './../../images/ad-1.png'
 import adtwo from './../../images/ad-2.png'
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import CategoriesSlider from "./categories";
 import BestSellingProductsSlider from "./BestSell";
 import MainSlider from "./MainSlider";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+interface Brand {
+  id: number;
+  name: string;
+  image: string | null;
+  description: string | null;
+}
 
 const Home = () => {
-  useEffect(() => {
+  
+useEffect(() => {
     // Fetch data using GET request
     axios.get('https://excite.techno-era.co/en/api/oscar/categories/')
         .then(response => {
@@ -53,6 +62,31 @@ const Home = () => {
             console.error('There was an error fetching the data!', error);
         });
 }, []);
+
+const [brands, setBrands] = useState<Brand[]>([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState<string | null>(null);
+
+useEffect(() => {
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get('https://excite.techno-era.co/en/api/oscar/products/brand/');
+      if (response.data.status) {
+        setBrands(response.data.data);
+      } else {
+        setError('Failed to fetch brands');
+      }
+    } catch (err) {
+      setError('An error occurred while fetching brands');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchBrands();
+}, []);
+
+if (loading) return <div>Loading...</div>;
 
   return (
     <DefaultLayout>
@@ -513,69 +547,45 @@ const Home = () => {
                 </div>
               </div>
             </div>
-
-            <Swiper
-              spaceBetween={12}
-              slidesPerView={3}
-              freeMode={true}
-              autoplay={{ delay: 1000, disableOnInteraction: false }}
-              loop={true}
-              speed={500}
-              breakpoints={{
-                575: {
-                  slidesPerView: 4, // 4 slides per view when the screen width is 993px or more
-                  spaceBetween: 24
-                },
-                992: {
-                  slidesPerView: 6, // 4 slides per view when the screen width is 993px or more
-                  spaceBetween: 30
-                },
-              }}
-              pagination={{ clickable: true }} // Add pagination
-              navigation={{ 
-                nextEl: '.next-4',
-                prevEl: '.prev-4',
-              }} // Add custom navigation controls
-              modules={[Pagination, Autoplay, Navigation]}
-              className="brands-slider"
-            >
-              <SwiperSlide>
-                <img src={brand1} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand2} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand3} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand4} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand5} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand6} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand1} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand2} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand3} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand4} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand5} />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={brand6} />
-              </SwiperSlide>
-            </Swiper>
+              <Swiper
+                spaceBetween={12}
+                slidesPerView={3}
+                freeMode={true}
+                autoplay={{ delay: 1000, disableOnInteraction: false }}
+                loop={true}
+                speed={500}
+                breakpoints={{
+                  575: {
+                    slidesPerView: 4,
+                    spaceBetween: 24,
+                  },
+                  992: {
+                    slidesPerView: 6,
+                    spaceBetween: 30,
+                  },
+                }}
+                pagination={{ clickable: true }}
+                navigation={{
+                  nextEl: '.next-4',
+                  prevEl: '.prev-4',
+                }}
+                modules={[Pagination, Autoplay, Navigation]}
+                className="brands-slider"
+              >
+                {brands.map((brand) => (
+                  <SwiperSlide key={brand.id}>
+                    <Link to={`/brand/${brand.id}/${encodeURIComponent(brand.name)}`}>
+                      {brand.image ? (
+                        <img src={brand.image} alt={brand.name} />
+                      ) : (
+                        <div className="placeholder">
+                          {brand.name}
+                        </div>
+                      )}
+                    </Link>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
           </div>
         </div>
       </div>

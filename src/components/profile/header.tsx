@@ -24,7 +24,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ activePage }) => {    ret
                     <Link to="/my-review" className={activePage === 'reviews' ? 'active' : ''}>
                         <span>My Reviews</span>
                     </Link>
-                    <Link to="/my-address" className={activePage === 'address' ? 'active' : ''}>
+                    <Link to="/my-addresses" className={activePage === 'address' ? 'active' : ''}>
                         <span>My Address</span>
                     </Link>
                 </nav>

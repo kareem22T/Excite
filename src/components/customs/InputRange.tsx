@@ -5,10 +5,18 @@ interface RangeSliderProps {
   min: number;
   max: number;
   step: number;
+  onChange: (values: [number, number]) => void;
 }
 
-const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step }) => {
-  const [values, setValues] = useState([min, max]);
+const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step, onChange }) => {
+  const [values, setValues] = useState<[number, number]>([min, max]);
+
+  const handleChange = (newValues: number[]) => {
+    if (newValues.length === 2) {
+      setValues(newValues as [number, number]);
+      onChange(newValues as [number, number]);
+    }
+  };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', padding: '20px' }}>
@@ -17,7 +25,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step }) => {
         step={step}
         min={min}
         max={max}
-        onChange={(newValues) => setValues(newValues)}
+        onChange={handleChange}
         renderTrack={({ props, children }) => (
           <div
             onMouseDown={props.onMouseDown}

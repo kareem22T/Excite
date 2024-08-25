@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import logo from './../../images/logo.png'
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, Router } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCredentials } from '../../features/auth/authSlice';
 import { api } from '../../Api';
 import { API_URL } from '../../_env';
 import best1 from './../../images/best-1.png'
 import axios from 'axios';
+import { fetchCartDetails, fetchCartProductDetails, removeProductFromCart, updateProductQuantity } from '../../features/cart/cartSlice';
+import { AppDispatch, RootState } from '../../store';
 type Category = {
     id: number,
     name: string
@@ -18,7 +20,7 @@ const Header = () => {
     const [showProfile, setShowProfile] = useState(false)
     const auth = useSelector((state:any) => state.auth);
     const [showCart, setShowCart] = useState(false)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
 
     const handleLogOut = async () => {
         console.log("logo out");
@@ -42,11 +44,18 @@ const Header = () => {
             console.error(error);
           }      
     }
-    
+    const Cart = useSelector((state: RootState) => state.cart);
+
     useEffect(() => {
+        
         fetchCategories()
     }, [])
-    
+    const [getCart, setGetCart] = useState(false)
+    useEffect(() => {
+        dispatch(fetchCartDetails()).then(() => {
+            dispatch(fetchCartProductDetails({cartId: Cart.cart?.id || 0}))
+        })
+    }, [dispatch])
     return (
         <header>
             <div className="top">
@@ -100,7 +109,27 @@ const Header = () => {
                             <path d="M11 7C8.239 7 6 9.216 6 11.95C6 14.157 6.875 19.395 15.488 24.69C15.6423 24.7839 15.8194 24.8335 16 24.8335C16.1806 24.8335 16.3577 24.7839 16.512 24.69C25.125 19.395 26 14.157 26 11.95C26 9.216 23.761 7 21 7C18.239 7 16 10 16 10C16 10 13.761 7 11 7Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </Link>
-                        <button onClick={() => {setShowCart(true)}} style={{border: "none", background: 'transparent'}}>
+                        <button onClick={() => {setShowCart(true)}} style={{border: "none", background: 'transparent', position: 'relative'}}>
+                            {
+                                (Cart.cart?.num_lines || 0) > 0 && (
+                                    <span 
+                                    style={{
+                                        background: '#DB4444',
+                                        color: '#fff',
+                                        width: '25px',
+                                        height: '25px',
+                                        position: 'absolute',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        borderRadius: '50%',
+                                        top: '-11px',
+                                        right: '-11px'
+                                    }}>
+                                        {(Cart.cart?.num_lines || 0) > 99 ? ("+" + (Cart.cart?.num_lines || 0)) : (Cart.cart?.num_lines || 0)}
+                                    </span>
+                                )
+                            }
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8.25 20.25C8.66421 20.25 9 19.9142 9 19.5C9 19.0858 8.66421 18.75 8.25 18.75C7.83579 18.75 7.5 19.0858 7.5 19.5C7.5 19.9142 7.83579 20.25 8.25 20.25Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M18.75 20.25C19.1642 20.25 19.5 19.9142 19.5 19.5C19.5 19.0858 19.1642 18.75 18.75 18.75C18.3358 18.75 18 19.0858 18 19.5C18 19.9142 18.3358 20.25 18.75 20.25Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -287,7 +316,7 @@ const Header = () => {
                         (categories && categories.length > 0) && (
                             categories.map(
                                 category => (
-                                    <Link to={'/category/' + category.id}>
+                                    <Link to={'/category/' + category.id + '/' + category.name}>
                                         {category.name}
                                     </Link>                
                                 )
@@ -304,118 +333,82 @@ const Header = () => {
                             <div className="cart_wrapper">
                                 <div className="head">
                                     <h1>Cart</h1>
-                                    <h2>4 items</h2>
+                                    <h2>{Cart.cart?.num_lines} items</h2>
                                 </div>
                                 <div className="products">
-                                    <div className="product">
-                                        <div>
-                                            <img src={best1} alt="" />
-                                            <div className="text">
-                                                <h3>PC Full Comp</h3>
-                                                <p>Color: Black</p>
-                                                <div className="quantity">
-                                                    <button>
-                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M3.22656 8H12.5599" stroke="#121212" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                    </button>
-                                                    2   
-                                                    <button>
-                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.3776 3.3335C8.3776 3.12639 8.20971 2.9585 8.0026 2.9585C7.7955 2.9585 7.6276 3.12639 7.6276 3.3335V7.62516H3.33594C3.12883 7.62516 2.96094 7.79306 2.96094 8.00016C2.96094 8.20727 3.12883 8.37516 3.33594 8.37516H7.6276V12.6668C7.6276 12.8739 7.7955 13.0418 8.0026 13.0418C8.20971 13.0418 8.3776 12.8739 8.3776 12.6668V8.37516H12.6693C12.8764 8.37516 13.0443 8.20727 13.0443 8.00016C13.0443 7.79306 12.8764 7.62516 12.6693 7.62516H8.3776V3.3335Z" fill="#121212"/>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h3 className="price">
-                                                $19.19
-                                            </h3>
-                                            <button>
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#6C7275"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="product">
-                                        <div>
-                                            <img src={best1} alt="" />
-                                            <div className="text">
-                                                <h3>PC Full Comp</h3>
-                                                <p>Color: Black</p>
-                                                <div className="quantity">
-                                                    <button>
-                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M3.22656 8H12.5599" stroke="#121212" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                    </button>
-                                                    2   
-                                                    <button>
-                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.3776 3.3335C8.3776 3.12639 8.20971 2.9585 8.0026 2.9585C7.7955 2.9585 7.6276 3.12639 7.6276 3.3335V7.62516H3.33594C3.12883 7.62516 2.96094 7.79306 2.96094 8.00016C2.96094 8.20727 3.12883 8.37516 3.33594 8.37516H7.6276V12.6668C7.6276 12.8739 7.7955 13.0418 8.0026 13.0418C8.20971 13.0418 8.3776 12.8739 8.3776 12.6668V8.37516H12.6693C12.8764 8.37516 13.0443 8.20727 13.0443 8.00016C13.0443 7.79306 12.8764 7.62516 12.6693 7.62516H8.3776V3.3335Z" fill="#121212"/>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h3 className="price">
-                                                $19.19
-                                            </h3>
-                                            <button>
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#6C7275"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="product">
-                                        <div>
-                                            <img src={best1} alt="" />
-                                            <div className="text">
-                                                <h3>PC Full Comp</h3>
-                                                <p>Color: Black</p>
-                                                <div className="quantity">
-                                                    <button>
-                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M3.22656 8H12.5599" stroke="#121212" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                    </button>
-                                                    2   
-                                                    <button>
-                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.3776 3.3335C8.3776 3.12639 8.20971 2.9585 8.0026 2.9585C7.7955 2.9585 7.6276 3.12639 7.6276 3.3335V7.62516H3.33594C3.12883 7.62516 2.96094 7.79306 2.96094 8.00016C2.96094 8.20727 3.12883 8.37516 3.33594 8.37516H7.6276V12.6668C7.6276 12.8739 7.7955 13.0418 8.0026 13.0418C8.20971 13.0418 8.3776 12.8739 8.3776 12.6668V8.37516H12.6693C12.8764 8.37516 13.0443 8.20727 13.0443 8.00016C13.0443 7.79306 12.8764 7.62516 12.6693 7.62516H8.3776V3.3335Z" fill="#121212"/>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h3 className="price">
-                                                $19.19
-                                            </h3>
-                                            <button>
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#6C7275"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
+                                    {
+                                        Cart.cart?.num_lines ? (
+                                            Cart.status === 'succeeded' &&
+                                            Cart.cart && 
+                                            Array.isArray(Cart.cart.lines) && 
+                                            Cart.cart.lines.length > 0 ? (
+                                                Cart.cart?.lines?.map(item => (
+                                                    <div className="product" >
+                                                        <div>
+                                                            <Link to={'/product/' + item.product_detail.id}>
+                                                                <img src={item.product_detail.images[0].original} alt="" />
+                                                            </Link>
+                                                            <div className="text">
+                                                                <Link style={{textDecoration: 'none'}} to={'/product/' + item.product_detail.id}>
+                                                                    <h3 style={{maxWidth: 200}}>{item.product_detail.title.length > 45 ? item.product_detail.title.slice(0, 45) + " ..." : item.product_detail.title}</h3>
+                                                                </Link>
+                                                                <div className="quantity" style={{width: 'max-content'}}>
+                                                                    <button style={{cursor: 'pointer'}} onClick={() => {
+                                                                        dispatch(updateProductQuantity({cartId: Cart.cart?.id || 0, itemId: item.id, quantity: (item.quantity > 1 ? item.quantity - 1 : item.quantity)}))
+                                                                    }}>
+                                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M3.22656 8H12.5599" stroke="#121212" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                    {item.quantity}
+                                                                    <button style={{cursor: 'pointer'}} onClick={() => {
+                                                                        dispatch(updateProductQuantity({cartId: Cart.cart?.id || 0, itemId: item.id, quantity: (item.quantity + 1)}))
+                                                                    }}>
+                                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.3776 3.3335C8.3776 3.12639 8.20971 2.9585 8.0026 2.9585C7.7955 2.9585 7.6276 3.12639 7.6276 3.3335V7.62516H3.33594C3.12883 7.62516 2.96094 7.79306 2.96094 8.00016C2.96094 8.20727 3.12883 8.37516 3.33594 8.37516H7.6276V12.6668C7.6276 12.8739 7.7955 13.0418 8.0026 13.0418C8.20971 13.0418 8.3776 12.8739 8.3776 12.6668V8.37516H12.6693C12.8764 8.37516 13.0443 8.20727 13.0443 8.00016C13.0443 7.79306 12.8764 7.62516 12.6693 7.62516H8.3776V3.3335Z" fill="#121212"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{whiteSpace: 'nowrap'}}>
+                                                            <h3 className="price">
+                                                                {item.product_detail.price.excl_tax + " " + item.product_detail.price.currency}
+                                                            </h3>
+                                                            <button onClick={() => {
+                                                                dispatch(removeProductFromCart({cartId: Cart.cart?.id || 0, itemId: item.id}))
+                                                            }}>
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#6C7275"/>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <h3 style={{minWidth: 300, marginTop: 40, marginBottom: 40}}>Loading ...</h3>
+                                            )
+                                        ) : (
+                                            <h3 style={{minWidth: 300, marginTop: 40, marginBottom: 40, textAlign: 'center'}}>There is no added items</h3>
+                                        )
+                                    }
                                 </div>
-                                <div className="bottom">
-                                    <p>
-                                        <span>Subtotal</span>
-                                        <span>$99.00</span>
-                                    </p>
-                                    <h4>
-                                        <span>Total</span>
-                                        <span>$234.00</span>
-                                    </h4>
-                                    <button>Checkout</button>
-                                    <Link to={'/cart'}>View Cart</Link>
-                                </div>
+                                {
+                                    ((Cart.cart?.num_lines || 0) > 0) && (
+                                        <div className="bottom">
+                                            <p>
+                                                <span>Subtotal</span>
+                                                <span>{Cart.cart?.total_excl_tax + " " + Cart.cart?.currency}</span>
+                                            </p>
+                                            <h4>
+                                                <span>Subtotal</span>
+                                                <span>{Cart.cart?.total_excl_tax + " " + Cart.cart?.currency}</span>
+                                            </h4>
+                                            <button>Checkout</button>
+                                            <Link to={'/cart'}>View Cart</Link>
+                                        </div>
+                                    )
+                                }
                             </div>
                         </div>
                     </>
